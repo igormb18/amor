@@ -75,6 +75,51 @@
       font-size: 0.9em;
       color: #fff;
     }
+
+    .music-button {
+      margin-top: 20px;
+      padding: 10px 20px;
+      font-size: 1em;
+      background-color: #fff;
+      color: #ee9ca7;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .music-button:hover {
+      background-color: #f8d9dd;
+    }
+
+    #player {
+      width: 0;
+      height: 0;
+    }
+
+    /* Responsivo para telas menores */
+    @media (max-width: 600px) {
+      h1 {
+        font-size: 2em;
+      }
+
+      h2 {
+        font-size: 1.2em;
+      }
+
+      .counter {
+        font-size: 1.4em;
+      }
+
+      .phrase {
+        font-size: 1.1em;
+      }
+
+      .music-button {
+        font-size: 0.95em;
+        padding: 8px 16px;
+      }
+    }
   </style>
 </head>
 <body>
@@ -82,14 +127,19 @@
   <h1>Igor & Vanessa</h1>
   <h2>Desde 15/11/2024</h2>
 
+  <!-- Botão para tocar/pausar música do YouTube -->
+  <button class="music-button" onclick="toggleMusic()">Tocar Música 🎵</button>
+
+  <!-- Player YouTube invisível -->
+  <div id="player"></div>
+
   <!-- Galeria de fotos -->
   <div class="slideshow-container">
-    <img src="https://i.imgur.com/Rufh2NU.jpeg" class="active" alt="Foto 1">
+    <img src="https://i.imgur.com/8hbQF7f.jpeg" class="active" alt="Foto 1">
     <img src="https://i.imgur.com/55rkmpV.jpeg" alt="Foto 2">
     <img src="https://i.imgur.com/esexv2B.jpeg" alt="Foto 3">
     <img src="https://i.imgur.com/pZVh3tx.jpeg" alt="Foto 4">
     <img src="https://i.imgur.com/ssyBTV5.jpeg" alt="Foto 5">
-    <img src="https://i.imgur.com/8hbQF7f.jpeg" alt="Foto 6">
   </div>
 
   <div class="counter" id="counter"></div>
@@ -103,31 +153,63 @@
     Feito com amor 🌹
   </div>
 
+  <!-- Scripts -->
   <script>
-    // Contador de dias
+    // Contador de meses
     const startDate = new Date("2024-11-15");
     const today = new Date();
-
-
-    // Calcular meses
     let months = today.getMonth() - startDate.getMonth() + (12 * (today.getFullYear() - startDate.getFullYear()));
-    
-    // Ajuste caso o mês atual seja menor que o mês de início
     if (today.getDate() < startDate.getDate()) {
       months--;
     }
-
     document.getElementById('monthCounter').innerText = `Nós estamos juntos há ${months} meses!`;
 
     // Slideshow
     const slides = document.querySelectorAll('.slideshow-container img');
     let currentIndex = 0;
-
     setInterval(() => {
       slides[currentIndex].classList.remove('active');
       currentIndex = (currentIndex + 1) % slides.length;
       slides[currentIndex].classList.add('active');
-    }, 3000); // Troca a cada 3 segundos
+    }, 3000);
+
+    // YouTube API
+    let player;
+    let isPlaying = false;
+
+    const tag = document.createElement('script');
+    tag.src = "https://www.youtube.com/iframe_api";
+    document.body.appendChild(tag);
+
+    function onYouTubeIframeAPIReady() {
+      player = new YT.Player('player', {
+        height: '0',
+        width: '0',
+        videoId: 'pf0krqNORZo',
+        playerVars: {
+          autoplay: 0,
+          loop: 1,
+          playlist: 'pf0krqNORZo'
+        }
+      });
+    }
+
+    function toggleMusic() {
+      if (!player || typeof player.getPlayerState !== 'function') return;
+
+      const button = document.querySelector(".music-button");
+
+      if (!isPlaying) {
+        player.setVolume(30); // Volume entre 0 e 100
+        player.playVideo();
+        button.innerText = "Pausar Música 🎵";
+        isPlaying = true;
+      } else {
+        player.pauseVideo();
+        button.innerText = "Tocar Música 🎵";
+        isPlaying = false;
+      }
+    }
   </script>
 </body>
 </html>
